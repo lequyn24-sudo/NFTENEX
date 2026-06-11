@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { Bookmark, Clock, Settings, User, LogOut, ChevronRight, Bell, Shield, Wallet } from "lucide-react";
+import { Bookmark, Clock, Settings, User, LogOut, ChevronRight, Bell, Shield, Wallet, X, Camera } from "lucide-react";
 import { Link, useNavigate } from "react-router";
+import { toast } from "sonner";
 
 const mockHistory = [
   {
@@ -24,10 +25,26 @@ const mockHistory = [
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState("saved");
   const [savedArticles, setSavedArticles] = useState<any[]>([]);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  
+  const [profileData, setProfileData] = useState({
+    name: "Alex",
+    role: "Web3 News Collector",
+    bio: "Exploring the bleeding edge of NFTs, GameFi, and decentralized markets.",
+    avatarUrl: ""
+  });
+  
+  const [editForm, setEditForm] = useState({...profileData});
+  
   const navigate = useNavigate();
 
   useEffect(() => {
     setSavedArticles(JSON.parse(localStorage.getItem('savedArticles') || '[]'));
+    const savedProfile = localStorage.getItem('profileData');
+    if (savedProfile) {
+      setProfileData(JSON.parse(savedProfile));
+      setEditForm(JSON.parse(savedProfile));
+    }
     
     const handleStorageChange = () => {
       setSavedArticles(JSON.parse(localStorage.getItem('savedArticles') || '[]'));
@@ -69,10 +86,10 @@ export function ProfilePage() {
           
           <div className="text-center sm:text-left flex-1">
             <h1 className="font-display font-black text-3xl sm:text-4xl text-foreground drop-shadow-lg">
-              Alex<span className="text-primary animate-pulse">_</span>
+              {profileData.name}<span className="text-primary animate-pulse">_</span>
             </h1>
             <p className="font-sans font-bold text-muted-foreground uppercase tracking-widest text-sm mt-1">
-              Web3 News Collector
+              {profileData.role}
             </p>
             <div className="flex items-center justify-center sm:justify-start gap-4 mt-4">
               <div className="text-center">
@@ -88,7 +105,10 @@ export function ProfilePage() {
           </div>
 
           <div className="flex gap-3 w-full sm:w-auto mt-4 sm:mt-0">
-            <button className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-primary/10 text-primary border border-primary/50 font-sans text-sm font-bold tracking-wider hover:bg-primary/20 transition-colors uppercase cyber-glitch-hover">
+            <button 
+              onClick={() => setIsEditModalOpen(true)}
+              className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-primary/10 text-primary border border-primary/50 font-sans text-sm font-bold tracking-wider hover:bg-primary/20 transition-colors uppercase cyber-glitch-hover"
+            >
               Edit Profile
             </button>
             <button 
@@ -291,6 +311,116 @@ export function ProfilePage() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Edit Profile Modal */}
+      <AnimatePresence>
+        {isEditModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-background/80 backdrop-blur-sm"
+              onClick={() => setIsEditModalOpen(false)}
+            />
+            
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative w-full max-w-lg bg-card border border-primary/20 rounded-2xl shadow-[0_0_40px_rgba(217,70,239,0.15)] overflow-hidden cyber-card"
+            >
+              <div className="flex items-center justify-between p-6 border-b border-border/50">
+                <h2 className="font-display font-bold text-xl text-foreground tracking-wide uppercase">Edit <span className="text-primary">Profile</span></h2>
+                <button 
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="p-2 rounded-full text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <div className="p-6 flex flex-col gap-6">
+                <div className="flex items-center gap-6">
+                  <div className="relative w-24 h-24 rounded-full bg-muted border border-border flex items-center justify-center overflow-hidden group cursor-pointer">
+                    {editForm.avatarUrl ? (
+                      <img src={editForm.avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
+                    ) : (
+                      <User size={40} className="text-muted-foreground" />
+                    )}
+                    <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                      <Camera size={20} className="text-white mb-1" />
+                      <span className="text-[9px] text-white font-bold uppercase tracking-widest">Change</span>
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <label className="font-sans text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Avatar URL</label>
+                    <input 
+                      type="text" 
+                      value={editForm.avatarUrl}
+                      onChange={(e) => setEditForm({...editForm, avatarUrl: e.target.value})}
+                      className="w-full bg-background border border-border rounded-lg px-4 py-2.5 font-sans text-sm text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all placeholder:text-muted-foreground/50"
+                      placeholder="https://example.com/avatar.png"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-sans text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Display Name</label>
+                  <input 
+                    type="text" 
+                    value={editForm.name}
+                    onChange={(e) => setEditForm({...editForm, name: e.target.value})}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 font-sans text-sm text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-sans text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Role / Title</label>
+                  <input 
+                    type="text" 
+                    value={editForm.role}
+                    onChange={(e) => setEditForm({...editForm, role: e.target.value})}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 font-sans text-sm text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="font-sans text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Bio</label>
+                  <textarea 
+                    rows={3}
+                    value={editForm.bio}
+                    onChange={(e) => setEditForm({...editForm, bio: e.target.value})}
+                    className="w-full bg-background border border-border rounded-lg px-4 py-2.5 font-sans text-sm text-foreground focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
+                    placeholder="Tell us about yourself..."
+                  />
+                </div>
+              </div>
+
+              <div className="p-6 border-t border-border/50 flex justify-end gap-3 bg-muted/20">
+                <button 
+                  onClick={() => setIsEditModalOpen(false)}
+                  className="px-6 py-2.5 rounded-lg border border-border text-foreground font-sans text-sm font-bold tracking-wider hover:bg-muted transition-colors uppercase"
+                >
+                  Cancel
+                </button>
+                <button 
+                  onClick={() => {
+                    setProfileData(editForm);
+                    localStorage.setItem('profileData', JSON.stringify(editForm));
+                    setIsEditModalOpen(false);
+                    toast.success("Profile updated successfully");
+                  }}
+                  className="px-6 py-2.5 rounded-lg bg-primary text-primary-foreground font-display text-sm font-bold tracking-wider shadow-[0_0_15px_rgba(217,70,239,0.3)] hover:bg-primary/90 transition-colors uppercase"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }
