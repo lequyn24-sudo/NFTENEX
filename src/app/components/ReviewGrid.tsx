@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
 import { Clock, Bookmark, Share2, Star } from "lucide-react";
+import { toast } from "sonner";
 
 const articles = [
   {
@@ -59,8 +60,47 @@ const articles = [
   },
 ];
 
-export function ReviewGrid() {
-  const [saved, setSaved] = useState<Set<number>>(new Set());
+export function ReviewGrid({ displayCount }: { displayCount?: number }) {
+  const [savedArticles, setSavedArticles] = useState<any[]>([]);
+
+  useEffect(() => {
+    setSavedArticles(JSON.parse(localStorage.getItem('savedArticles') || '[]'));
+  }, []);
+
+  const handleSave = (e: React.MouseEvent, article: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    const saved = JSON.parse(localStorage.getItem('savedArticles') || '[]');
+    const isSaved = saved.some((a: any) => a.title === article.title);
+    
+    let newSaved;
+    if (isSaved) {
+      newSaved = saved.filter((a: any) => a.title !== article.title);
+      toast.success("Removed from bookmarks");
+    } else {
+      newSaved = [...saved, article];
+      toast.success("Added to bookmarks");
+    }
+    
+    localStorage.setItem('savedArticles', JSON.stringify(newSaved));
+    setSavedArticles(newSaved);
+  };
+
+  const handleShare = (e: React.MouseEvent, title: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const url = window.location.origin + "/article/" + title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    navigator.clipboard.writeText(url);
+    toast.success("Link copied to clipboard");
+  };
+
+  // Create an extended array to simulate "loaded" data if displayCount > default length
+  const extendedArticles = displayCount && displayCount > articles.length
+    ? [...articles, ...articles.map(a => ({...a, title: `[NEW] ${a.title}`}))]
+    : articles;
+    
+  const visibleArticles = displayCount ? extendedArticles.slice(0, displayCount) : articles;
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 pb-16">
@@ -71,7 +111,7 @@ export function ReviewGrid() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-3 gap-6">
-        {articles.map((article, i) => (
+        {visibleArticles.map((article, i) => (
           <motion.article
             key={i}
             initial={{ opacity: 0, y: 30 }}
@@ -109,8 +149,8 @@ export function ReviewGrid() {
               </div>
             </div>
 
-            <div className="p-5 flex flex-col flex-1 relative z-20">
-              <h3 className="font-display font-bold text-lg leading-tight text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors cyber-glitch-hover">
+            <div className="p-5 flex flex-col flex-1 relative z-20 pointer-events-none">
+              <h3 className="font-display font-bold text-lg leading-tight text-foreground mb-3 line-clamp-2 group-hover:text-primary transition-colors cyber-glitch-hover pointer-events-auto">
                 {article.title}
               </h3>
               <p className="font-sans text-sm text-muted-foreground leading-relaxed line-clamp-3 mb-6 flex-1">
@@ -129,12 +169,15 @@ export function ReviewGrid() {
 
                 <div className="flex items-center gap-1 pointer-events-auto">
                   <button
-                    onClick={(e) => { e.preventDefault(); setSaved(prev => { const n = new Set(prev); n.has(i) ? n.delete(i) : n.add(i); return n; }) }}
-                    className={`p-2 rounded-full transition-all ${saved.has(i) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+                    onClick={(e) => handleSave(e, article)}
+                    className={`p-2 rounded-full transition-all ${savedArticles.some((a: any) => a.title === article.title) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
                   >
-                    <Bookmark size={14} fill={saved.has(i) ? "currentColor" : "none"} />
+                    <Bookmark size={14} fill={savedArticles.some((a: any) => a.title === article.title) ? "currentColor" : "none"} />
                   </button>
-                  <button className="p-2 rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-all">
+                  <button 
+                    onClick={(e) => handleShare(e, article.title)}
+                    className="p-2 rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
+                  >
                     <Share2 size={14} />
                   </button>
                 </div>

@@ -1,5 +1,7 @@
-import { Search, Hash, Clock, Send, Twitter, Facebook, Instagram, Youtube, Users } from "lucide-react";
+import { useState } from "react";
+import { Search, Hash, Clock, Send, Twitter, Facebook, Instagram, Youtube, Users, Loader2 } from "lucide-react";
 import { Link } from "react-router";
+import { toast } from "sonner";
 
 const trendingTags = ["#Bitcoin", "#SolanaNFT", "#GameFi", "#Airdrops", "#Ethereum", "#Web3"];
 
@@ -16,6 +18,24 @@ const authors = [
 ];
 
 export function RightSidebar() {
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const handleSubscribe = () => {
+    if (!email) return;
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    setIsSubscribing(true);
+    setTimeout(() => {
+      setIsSubscribing(false);
+      setEmail("");
+      toast.success("Successfully subscribed to the newsletter!");
+    }, 1500);
+  };
+
   return (
     <aside className="hidden xl:flex flex-col w-[300px] h-screen sticky top-0 border-l border-border/50 bg-transparent p-6 overflow-y-auto">
       
@@ -37,11 +57,18 @@ export function RightSidebar() {
         <div className="flex gap-2">
           <input 
             type="email" 
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
             placeholder="Email..." 
             className="flex-1 bg-background/80 border border-border rounded text-xs px-3 py-2 outline-none focus:border-primary/50"
           />
-          <button className="bg-primary text-primary-foreground rounded p-2 hover:bg-primary/90 transition-colors">
-            <Send size={14} />
+          <button 
+            onClick={handleSubscribe}
+            disabled={isSubscribing}
+            className="bg-primary text-primary-foreground rounded p-2 hover:bg-primary/90 transition-colors disabled:opacity-70 flex items-center justify-center min-w-[32px]"
+          >
+            {isSubscribing ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
           </button>
         </div>
       </div>

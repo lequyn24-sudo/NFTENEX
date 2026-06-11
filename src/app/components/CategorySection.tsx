@@ -106,8 +106,8 @@ export function CategorySection({ categoryName }: { categoryName: string }) {
               <div className="absolute inset-0 scanlines opacity-30 mix-blend-overlay group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
             </div>
 
-            <div className="p-4 flex flex-col flex-1 relative z-20 justify-center">
-              <h3 className="font-display font-bold text-base leading-tight text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors cyber-glitch-hover">
+            <div className="p-4 flex flex-col flex-1 relative z-20 justify-center pointer-events-none">
+              <h3 className="font-display font-bold text-base leading-tight text-foreground mb-2 line-clamp-2 group-hover:text-primary transition-colors cyber-glitch-hover pointer-events-auto">
                 {article.title}
               </h3>
               <p className="font-sans text-xs text-muted-foreground leading-relaxed line-clamp-2 mb-4">

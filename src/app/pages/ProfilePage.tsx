@@ -1,22 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { Bookmark, Clock, Settings, User, LogOut, ChevronRight, Bell, Shield, Wallet } from "lucide-react";
 import { Link, useNavigate } from "react-router";
-
-const mockSavedArticles = [
-  {
-    title: "Off The Grid: The Cyberpunk Battle Royale We Deserve?",
-    category: "GameFi",
-    time: "3 hr ago",
-    image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80"
-  },
-  {
-    title: "The Ultimate Guide to Launching Your First NFT Collection in 2026",
-    category: "NFTs",
-    time: "2 days ago",
-    image: "https://images.unsplash.com/photo-1620321023374-d1a68fbc720d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=600&q=80"
-  }
-];
 
 const mockHistory = [
   {
@@ -38,7 +23,18 @@ const mockHistory = [
 
 export function ProfilePage() {
   const [activeTab, setActiveTab] = useState("saved");
+  const [savedArticles, setSavedArticles] = useState<any[]>([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setSavedArticles(JSON.parse(localStorage.getItem('savedArticles') || '[]'));
+    
+    const handleStorageChange = () => {
+      setSavedArticles(JSON.parse(localStorage.getItem('savedArticles') || '[]'));
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const handleSignOut = () => {
     localStorage.removeItem('isAuthenticated');
@@ -85,7 +81,7 @@ export function ProfilePage() {
               </div>
               <div className="w-px h-8 bg-border" />
               <div className="text-center">
-                <span className="block font-display font-bold text-xl text-primary drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">24</span>
+                <span className="block font-display font-bold text-xl text-primary drop-shadow-[0_0_8px_rgba(217,70,239,0.5)]">{savedArticles.length}</span>
                 <span className="font-sans text-[10px] text-muted-foreground uppercase tracking-widest">Saved</span>
               </div>
             </div>
@@ -148,36 +144,49 @@ export function ProfilePage() {
                 exit={{ opacity: 0, y: -10 }}
                 transition={{ duration: 0.2 }}
               >
-                <div className="flex items-center gap-2 mb-6 border-b border-border/50 pb-4">
-                  <Bookmark size={24} className="text-primary" />
-                  <h2 className="font-display font-bold text-2xl text-foreground">Saved Articles</h2>
+                <div className="flex items-center justify-between mb-6 border-b border-border/50 pb-4">
+                  <div className="flex items-center gap-2">
+                    <Bookmark size={24} className="text-primary" />
+                    <h2 className="font-display font-bold text-2xl text-foreground">Saved Articles</h2>
+                  </div>
+                  <span className="font-sans font-bold text-muted-foreground bg-muted px-3 py-1 rounded-full text-xs">
+                    {savedArticles.length} items
+                  </span>
                 </div>
                 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {mockSavedArticles.map((article, i) => (
-                    <Link 
-                      key={i} 
-                      to={`/article/${article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
-                      className="group flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-colors shadow-sm cyber-card"
-                    >
-                      <div className="h-40 overflow-hidden relative">
-                        <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-                        <div className="absolute top-3 left-3 bg-background/80 backdrop-blur border border-border px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-foreground">
-                          {article.category}
+                {savedArticles.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground border border-dashed border-border rounded-xl">
+                    <Bookmark size={48} className="mb-4 opacity-20" />
+                    <p className="font-sans font-semibold text-lg">No saved articles yet</p>
+                    <p className="font-sans text-sm mt-1">Articles you bookmark will appear here.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {savedArticles.map((article, i) => (
+                      <Link 
+                        key={i} 
+                        to={`/article/${article.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+                        className="group flex flex-col bg-card border border-border rounded-xl overflow-hidden hover:border-primary/50 transition-colors shadow-sm cyber-card"
+                      >
+                        <div className="h-40 overflow-hidden relative">
+                          <img src={article.image} alt={article.title} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                          <div className="absolute top-3 left-3 bg-background/80 backdrop-blur border border-border px-2 py-1 rounded text-[10px] font-bold uppercase tracking-widest text-foreground">
+                            {article.category}
+                          </div>
                         </div>
-                      </div>
-                      <div className="p-4 flex flex-col flex-1">
-                        <h3 className="font-display font-bold text-base leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-4">
-                          {article.title}
-                        </h3>
-                        <div className="mt-auto flex items-center justify-between text-muted-foreground">
-                          <span className="font-sans text-xs flex items-center gap-1"><Clock size={12} /> {article.time}</span>
-                          <Bookmark size={14} className="text-primary" fill="currentColor" />
+                        <div className="p-4 flex flex-col flex-1">
+                          <h3 className="font-display font-bold text-base leading-tight text-foreground group-hover:text-primary transition-colors line-clamp-2 mb-4">
+                            {article.title}
+                          </h3>
+                          <div className="mt-auto flex items-center justify-between text-muted-foreground">
+                            <span className="font-sans text-xs flex items-center gap-1"><Clock size={12} /> {article.time}</span>
+                            <Bookmark size={14} className="text-primary" fill="currentColor" />
+                          </div>
                         </div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </motion.div>
             )}
 

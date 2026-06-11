@@ -1,11 +1,15 @@
 import { useLocation, useParams, Link } from "react-router";
-import { Clock, Eye, Share2, Bookmark, ArrowLeft, Twitter, Linkedin, Link as LinkIcon } from "lucide-react";
+import { useState } from "react";
+import { Clock, Eye, Share2, Bookmark, ArrowLeft, Twitter, Linkedin, Link as LinkIcon, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { RightSidebar } from "../components/RightSidebar";
+import { toast } from "sonner";
 
 export function ArticlePage() {
   const { slug } = useParams();
   const location = useLocation();
+  const [email, setEmail] = useState("");
+  const [isSubscribing, setIsSubscribing] = useState(false);
   
   // Use passed state or fallback to generated mock data based on slug
   const article = location.state || {
@@ -16,6 +20,21 @@ export function ArticlePage() {
     views: "1.2K",
     image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&w=1080&q=80",
     excerpt: "The intersection of digital ownership and decentralized finance continues to evolve."
+  };
+
+  const handleSubscribe = () => {
+    if (!email) return;
+    if (!email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    
+    setIsSubscribing(true);
+    setTimeout(() => {
+      setIsSubscribing(false);
+      setEmail("");
+      toast.success("Successfully subscribed to the newsletter!");
+    }, 1500);
   };
 
   return (
@@ -205,9 +224,20 @@ export function ArticlePage() {
               <p className="font-sans text-sm text-muted-foreground">Get the latest Web3 news, drops, and alpha straight to your inbox.</p>
             </div>
             <div className="flex w-full md:w-auto gap-2">
-              <input type="email" placeholder="Enter your email" className="flex-1 md:w-64 px-4 py-3 rounded-lg bg-background border border-border focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-sans text-sm" />
-              <button className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-display font-bold text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(217,70,239,0.3)]">
-                Subscribe
+              <input 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSubscribe()}
+                placeholder="Enter your email" 
+                className="flex-1 md:w-64 px-4 py-3 rounded-lg bg-background border border-border focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary font-sans text-sm" 
+              />
+              <button 
+                onClick={handleSubscribe}
+                disabled={isSubscribing}
+                className="px-6 py-3 rounded-lg bg-primary text-primary-foreground font-display font-bold text-sm tracking-widest uppercase hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(217,70,239,0.3)] disabled:opacity-70 flex items-center justify-center gap-2"
+              >
+                {isSubscribing ? <Loader2 size={16} className="animate-spin" /> : "Subscribe"}
               </button>
             </div>
           </div>

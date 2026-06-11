@@ -10,6 +10,7 @@ import { ArticlePage } from "./pages/ArticlePage";
 import { StaticPage } from "./pages/StaticPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { useEffect } from "react";
+import { Toaster } from "sonner";
 
 export default function App() {
   useEffect(() => {
@@ -18,6 +19,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
+      <Toaster theme="dark" position="bottom-right" />
       <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
       <div className="fixed pointer-events-none inset-0 overflow-hidden z-0">
         {/* Glow Effects */}
