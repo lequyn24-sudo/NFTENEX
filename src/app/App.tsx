@@ -10,6 +10,7 @@ import { AuthPage } from "./pages/AuthPage";
 import { ArticlePage } from "./pages/ArticlePage";
 import { StaticPage } from "./pages/StaticPage";
 import { ProfilePage } from "./pages/ProfilePage";
+import { TagPage } from "./pages/TagPage";
 import { useEffect } from "react";
 import { Toaster } from "sonner";
 
@@ -49,6 +50,7 @@ export default function App() {
                 <Route path="/" element={<HomePage />} />
                 <Route path="/category/:category" element={<CategoryPage />} />
                 <Route path="/article/:slug" element={<ArticlePage />} />
+                <Route path="/tag/:tagName" element={<TagPage />} />
                 <Route path="/info/:pageId" element={<StaticPage />} />
                 <Route path="/profile" element={<ProfilePage />} />
                 <Route path="/auth" element={<AuthPage />} />

@@ -110,7 +110,7 @@ export function RightSidebar() {
           {trendingTags.map((tag, i) => (
             <Link 
               key={i} 
-              to="/category/news" 
+              to={`/tag/${tag.replace('#', '')}`}
               className="px-2.5 py-1 rounded bg-muted/50 border border-border font-sans text-xs font-semibold text-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-colors cursor-pointer"
             >
               {tag}
