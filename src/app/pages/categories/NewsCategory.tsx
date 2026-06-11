@@ -15,10 +15,14 @@ const featured = {
 
 export function NewsCategory() {
   const [isLoading, setIsLoading] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(6);
 
   const handleLoadMore = () => {
     setIsLoading(true);
-    setTimeout(() => setIsLoading(false), 1500);
+    setTimeout(() => {
+      setIsLoading(false);
+      setVisibleCount(prev => prev + 6);
+    }, 1500);
   };
 
   return (
@@ -61,9 +65,10 @@ export function NewsCategory() {
         </div>
       </motion.article>
 
-      <NewsGrid />
+      <NewsGrid displayCount={visibleCount} />
       
-      <div className="mt-12 flex justify-center">
+      {visibleCount <= 6 && (
+        <div className="mt-12 flex justify-center">
         <button 
           onClick={handleLoadMore}
           disabled={isLoading}
@@ -83,7 +88,8 @@ export function NewsCategory() {
           </span>
           {!isLoading && <div className="absolute inset-0 bg-primary/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />}
         </button>
-      </div>
+        </div>
+      )}
     </div>
   );
 }
