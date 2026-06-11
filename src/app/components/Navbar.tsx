@@ -132,9 +132,9 @@ export function Navbar() {
             <Link to="/auth" className="w-full mt-4">
               <button 
                 onClick={() => setMenuOpen(false)}
-                className="w-full py-3 rounded bg-primary text-primary-foreground font-display font-bold text-sm tracking-wider shadow-[0_0_15px_rgba(217,70,239,0.3)]"
+                className="w-full py-3 rounded-lg bg-primary text-primary-foreground font-display font-bold text-sm tracking-wider shadow-[0_0_15px_rgba(217,70,239,0.3)] uppercase"
               >
-                CONNECT WALLET
+                Sign In
               </button>
             </Link>
           )}

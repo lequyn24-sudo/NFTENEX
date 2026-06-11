@@ -2,6 +2,7 @@ import { Navbar } from "./components/Navbar";
 import { LeftSidebar } from "./components/LeftSidebar";
 import { RightSidebar } from "./components/RightSidebar";
 import { TickerBar } from "./components/TickerBar";
+import { Footer } from "./components/Footer";
 import { BrowserRouter, Routes, Route } from "react-router";
 import { HomePage } from "./pages/HomePage";
 import { CategoryPage } from "./pages/CategoryPage";
@@ -53,6 +54,8 @@ export default function App() {
                 <Route path="/auth" element={<AuthPage />} />
               </Routes>
             </div>
+            
+            <Footer />
           </main>
 
           {/* Right Sidebar */}
