@@ -1,6 +1,14 @@
 import { useState, useEffect } from "react";
-import { Menu, X, Search, Bell, Moon, Sun, User, LogOut } from "lucide-react";
-import { Link } from "react-router";
+import { Menu, X, Search, Bell, Moon, Sun, User, LogOut, Home, Newspaper, Image, Star, BarChart3 } from "lucide-react";
+import { Link, NavLink } from "react-router";
+
+const navItems = [
+  { name: "Home", icon: Home, path: "/" },
+  { name: "News", icon: Newspaper, path: "/category/news" },
+  { name: "NFTs", icon: Image, path: "/category/nfts" },
+  { name: "Reviews", icon: Star, path: "/category/reviews" },
+  { name: "Market", icon: BarChart3, path: "/category/market" },
+];
 
 export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -71,17 +79,32 @@ export function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       {menuOpen && (
-        <div className="lg:hidden absolute top-full left-0 right-0 border-b border-border bg-card/95 backdrop-blur-xl p-4 flex flex-col gap-4 shadow-xl">
-          {["News", "NFTs", "Market", "Gaming", "Adoption", "Reviews"].map((item, i) => (
-            <Link 
-              key={i} 
-              to={`/category/${item.toLowerCase()}`} 
-              onClick={() => setMenuOpen(false)}
-              className="font-sans font-bold text-sm text-foreground hover:text-primary uppercase tracking-widest transition-colors duration-200 pl-2 border-l-2 border-transparent hover:border-primary"
-            >
-              {item}
-            </Link>
-          ))}
+        <div className="lg:hidden absolute top-full left-0 right-0 border-b border-border bg-card/95 backdrop-blur-xl p-4 flex flex-col gap-2 shadow-xl">
+          <div className="font-sans text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 px-3">
+            Menu
+          </div>
+          {navItems.map((item, i) => {
+            const Icon = item.icon;
+            return (
+              <NavLink 
+                key={i} 
+                to={item.path} 
+                onClick={() => setMenuOpen(false)}
+                className={({ isActive }) => `flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group ${
+                  isActive 
+                    ? "bg-primary/10 text-primary border border-primary/20 shadow-[0_0_15px_rgba(217,70,239,0.1)]" 
+                    : "text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-transparent"
+                }`}
+              >
+                {({ isActive }) => (
+                  <>
+                    <Icon size={18} className={isActive ? "text-primary" : "group-hover:text-primary transition-colors"} />
+                    <span className="font-sans font-semibold text-sm">{item.name}</span>
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
           {isAuthenticated ? (
             <div className="mt-4 border-t border-border/50 pt-4 flex flex-col gap-3">
               <Link to="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 p-2 hover:bg-muted/30 rounded-lg transition-colors group">
