@@ -108,13 +108,13 @@ export function RightSidebar() {
         </div>
         <div className="flex flex-wrap gap-2">
           {trendingTags.map((tag, i) => (
-            <a 
+            <Link 
               key={i} 
-              href="#" 
-              className="px-2.5 py-1 rounded bg-muted/50 border border-border font-sans text-xs font-semibold text-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-colors"
+              to="/category/news" 
+              className="px-2.5 py-1 rounded bg-muted/50 border border-border font-sans text-xs font-semibold text-foreground hover:bg-primary/10 hover:border-primary/30 hover:text-primary transition-colors cursor-pointer"
             >
               {tag}
-            </a>
+            </Link>
           ))}
         </div>
       </div>
