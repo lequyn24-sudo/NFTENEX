@@ -72,10 +72,15 @@ export function Navbar() {
       {/* Mobile Menu Dropdown */}
       {menuOpen && (
         <div className="lg:hidden absolute top-full left-0 right-0 border-b border-border bg-card/95 backdrop-blur-xl p-4 flex flex-col gap-4 shadow-xl">
-          {["Drops", "Gaming", "Investment", "Market", "Adoptions", "NFT"].map((item, i) => (
-            <a key={i} href="#" className="font-sans font-bold text-sm text-foreground hover:text-primary uppercase tracking-widest transition-colors duration-200 pl-2 border-l-2 border-transparent hover:border-primary">
+          {["News", "NFTs", "Market", "Gaming", "Adoption", "Reviews"].map((item, i) => (
+            <Link 
+              key={i} 
+              to={`/category/${item.toLowerCase()}`} 
+              onClick={() => setMenuOpen(false)}
+              className="font-sans font-bold text-sm text-foreground hover:text-primary uppercase tracking-widest transition-colors duration-200 pl-2 border-l-2 border-transparent hover:border-primary"
+            >
               {item}
-            </a>
+            </Link>
           ))}
           {isAuthenticated ? (
             <div className="mt-4 border-t border-border/50 pt-4 flex flex-col gap-3">
