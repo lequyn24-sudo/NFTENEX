@@ -1,0 +1,117 @@
+import { useState, useEffect } from "react";
+import { Menu, X, Search, Bell, Moon, Sun, User, LogOut } from "lucide-react";
+import { Link } from "react-router";
+
+export function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isDark, setIsDark] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains('dark'));
+    setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+    
+    const handleStorageChange = () => {
+      setIsAuthenticated(localStorage.getItem('isAuthenticated') === 'true');
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const toggleTheme = () => {
+    const root = document.documentElement;
+    if (root.classList.contains('dark')) {
+      root.classList.remove('dark');
+      setIsDark(false);
+    } else {
+      root.classList.add('dark');
+      setIsDark(true);
+    }
+  };
+
+  return (
+    <nav className="lg:hidden fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md transition-colors duration-300">
+      <div className="px-4 py-3 flex items-center justify-between">
+        
+        {/* Mobile Menu Button */}
+        <button 
+          className="lg:hidden text-foreground hover:text-primary transition-colors"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+
+        {/* Mobile Logo */}
+        <Link to="/" className="flex items-center gap-2 group">
+          <div className="flex items-center text-primary transition-transform group-hover:scale-105 duration-300">
+            <svg width="24" height="24" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="5" y="5" width="50" height="70" stroke="currentColor" strokeWidth="10" fill="none" />
+              <rect x="35" y="25" width="50" height="70" stroke="currentColor" strokeWidth="10" fill="none" />
+              <path d="M25 25 L75 85" stroke="currentColor" strokeWidth="10" />
+            </svg>
+          </div>
+          <span className="font-display font-bold text-xl text-primary lowercase tracking-wide drop-shadow-[0_0_10px_rgba(217,70,239,0.5)]">
+            nftenex
+          </span>
+        </Link>
+
+        {/* Utilities */}
+        <div className="flex items-center gap-3">
+          <button className="text-muted-foreground hover:text-primary transition-colors">
+            <Search size={20} />
+          </button>
+          <button 
+            onClick={toggleTheme}
+            className="p-1 rounded text-muted-foreground hover:text-primary transition-colors duration-200"
+          >
+            {isDark ? <Sun size={20} /> : <Moon size={20} />}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Dropdown */}
+      {menuOpen && (
+        <div className="lg:hidden absolute top-full left-0 right-0 border-b border-border bg-card/95 backdrop-blur-xl p-4 flex flex-col gap-4 shadow-xl">
+          {["Drops", "Gaming", "Investment", "Market", "Adoptions", "NFT"].map((item, i) => (
+            <a key={i} href="#" className="font-sans font-bold text-sm text-foreground hover:text-primary uppercase tracking-widest transition-colors duration-200 pl-2 border-l-2 border-transparent hover:border-primary">
+              {item}
+            </a>
+          ))}
+          {isAuthenticated ? (
+            <div className="mt-4 border-t border-border/50 pt-4 flex flex-col gap-3">
+              <Link to="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 p-2 hover:bg-muted/30 rounded-lg transition-colors group">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center border border-primary/50 text-primary group-hover:scale-105 transition-transform">
+                  <User size={20} />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-sans font-bold text-sm text-foreground group-hover:text-primary transition-colors">Alex</span>
+                  <span className="font-sans text-[10px] text-muted-foreground uppercase tracking-widest">Collector</span>
+                </div>
+              </Link>
+              <button 
+                onClick={() => {
+                  localStorage.removeItem('isAuthenticated');
+                  setIsAuthenticated(false);
+                  setMenuOpen(false);
+                  window.dispatchEvent(new Event('storage'));
+                }}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded border border-border text-muted-foreground font-sans text-xs font-bold tracking-wider hover:bg-destructive/10 hover:text-destructive hover:border-destructive/50 transition-all uppercase mt-2"
+              >
+                <LogOut size={16} /> Sign Out
+              </button>
+            </div>
+          ) : (
+            <Link to="/auth" className="w-full mt-4">
+              <button 
+                onClick={() => setMenuOpen(false)}
+                className="w-full py-3 rounded bg-primary text-primary-foreground font-display font-bold text-sm tracking-wider shadow-[0_0_15px_rgba(217,70,239,0.3)]"
+              >
+                CONNECT WALLET
+              </button>
+            </Link>
+          )}
+        </div>
+      )}
+    </nav>
+  );
+}
