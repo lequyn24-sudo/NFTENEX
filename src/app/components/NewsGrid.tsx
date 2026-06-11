@@ -173,16 +173,16 @@ export function NewsGrid({ displayCount }: { displayCount?: number }) {
                   </span>
                 </div>
 
-                <div className="flex items-center gap-1 pointer-events-auto">
+                <div className="flex items-center gap-1">
                   <button
                     onClick={(e) => handleSave(e, article)}
-                    className={`p-2 rounded-full transition-all ${savedArticles.some((a: any) => a.title === article.title) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
+                    className={`p-2 rounded-full transition-all relative z-50 pointer-events-auto ${savedArticles.some((a: any) => a.title === article.title) ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-secondary hover:text-foreground"}`}
                   >
                     <Bookmark size={14} fill={savedArticles.some((a: any) => a.title === article.title) ? "currentColor" : "none"} />
                   </button>
                   <button 
                     onClick={(e) => handleShare(e, article.title)}
-                    className="p-2 rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-all"
+                    className="p-2 rounded-full text-muted-foreground hover:bg-secondary hover:text-foreground transition-all relative z-50 pointer-events-auto"
                   >
                     <Share2 size={14} />
                   </button>
