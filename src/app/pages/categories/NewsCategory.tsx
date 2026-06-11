@@ -2,6 +2,7 @@ import { NewsGrid } from "../../components/NewsGrid";
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Clock, Eye, ArrowRight, Loader2 } from "lucide-react";
+import { Link } from "react-router";
 
 const featured = {
   label: "FEATURED",
@@ -36,7 +37,13 @@ export function NewsCategory() {
         whileHover={{ scale: 1.01, boxShadow: "0 0 20px rgba(217,70,239,0.2)" }} 
         transition={{ duration: 0.4 }}
       >
-        <a href="#" className="absolute inset-0 z-10"><span className="sr-only">Read article</span></a>
+        <Link 
+          to={`/article/${featured.title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}
+          state={featured}
+          className="absolute inset-0 z-10"
+        >
+          <span className="sr-only">Read article</span>
+        </Link>
         <img src={featured.image} alt="Featured article" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/95 to-transparent" />
         <div className="absolute inset-0 scanlines opacity-50 mix-blend-overlay group-hover:opacity-100 transition-opacity duration-300" />
